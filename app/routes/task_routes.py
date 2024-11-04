@@ -98,10 +98,18 @@ def update_task(task_id):
 
     task.title = request_body["title"]
     task.description = request_body["description"]
-    task.completed_at = request_body["completed_at"]
     db.session.commit()
 
-    return Response(status=204, mimetype="application/json")
+    response = {
+        "task": {
+            "id": task.id,
+            "title": task.title,
+            "description": task.description,
+            "is_complete": task.completed_at != None
+        }
+    }
+
+    return response, 200
 
 @task_bp.delete("/<task_id>")
 def delete_task(task_id):

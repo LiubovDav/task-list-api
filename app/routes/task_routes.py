@@ -7,6 +7,14 @@ task_bp = Blueprint("task_bp", __name__, url_prefix="/tasks" )
 @task_bp.post("")
 def create_task():
     request_body = request.get_json()
+    try:
+        title = request_body["title"]
+    except:
+        response = {
+            "details": "Invalid data"
+        }
+        return response, 400
+
     title = request_body["title"]
     description = request_body["description"]
     try:
@@ -79,7 +87,8 @@ def validate_task(task_id):
     try:
         task_id = int(task_id)
     except:
-        response = {"message": f"task {task_id} invalid"}
+        response = {"details": "Invalid data"}
+
         abort(make_response(response , 400))
 
     query = db.select(Task).where(Task.id == task_id)
@@ -117,8 +126,11 @@ def delete_task(task_id):
     db.session.delete(task)
     db.session.commit()
 
-    return Response(status=204, mimetype="application/json")
+    response = {
+        "details": f"Task {task_id} \"{task.title}\" successfully deleted"
+    }
 
+    return response, 200
 
 
 

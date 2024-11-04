@@ -15,8 +15,16 @@ def create_task():
         }
         return response, 400
 
-    title = request_body["title"]
-    description = request_body["description"]
+   
+    try:
+         description = request_body["description"]
+    except:
+        response = {
+            "details": "Invalid data"
+        }
+        return response, 400
+
+
     try:
         completed_at = request_body["completed_at"]
     except:

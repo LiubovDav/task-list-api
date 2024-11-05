@@ -1,6 +1,7 @@
 from flask import Blueprint, request, Response, make_response, abort
 from app.models.task import Task
 from ..db import db
+from datetime import datetime
 
 bp = Blueprint("task_bp", __name__, url_prefix="/tasks" )
 
@@ -112,6 +113,48 @@ def update_task(task_id):
     task.title = request_body["title"]
     task.description = request_body["description"]
     db.session.commit()
+
+    response = {
+        "task": {
+            "id": task.id,
+            "title": task.title,
+            "description": task.description,
+            "is_complete": task.completed_at != None
+        }
+    }
+
+    return response, 200
+
+@bp.patch("/<task_id>/mark_complete")
+def mark_complete(task_id):
+    task = validate_task(task_id)
+
+    if task.completed_at == None:
+        task.completed_at = datetime.utcnow()
+        db.session.commit()
+    else:
+        pass
+
+    response = {
+        "task": {
+            "id": task.id,
+            "title": task.title,
+            "description": task.description,
+            "is_complete": task.completed_at != None
+        }
+    }
+
+    return response, 200
+
+@bp.patch("/<task_id>/mark_incomplete")
+def mark_incomplete(task_id):
+    task = validate_task(task_id)
+
+    if task.completed_at != None:
+        task.completed_at = None
+        db.session.commit()
+    else:
+        pass
 
     response = {
         "task": {

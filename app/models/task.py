@@ -9,6 +9,7 @@ class Task(db.Model):
     description: Mapped[str]
     completed_at: Mapped[Optional[str]]
 
+    # from model to JSON
     def to_dict(self):
         return dict(
             task=dict(
@@ -17,6 +18,14 @@ class Task(db.Model):
                 description=self.description,
                 is_complete=self.completed_at!=None
                 )
+        )
+    
+    # from JSON to model
+    @classmethod
+    def from_dict(cls, task_data):
+        return cls(
+            title=task_data["title"],
+            description=task_data["description"]
         )
 
 

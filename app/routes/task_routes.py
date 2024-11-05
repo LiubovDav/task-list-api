@@ -7,43 +7,41 @@ bp = Blueprint("task_bp", __name__, url_prefix="/tasks" )
 @bp.post("")
 def create_task():
     request_body = request.get_json()
+
     try:
-        title = request_body["title"]
-    except:
+        new_task = Task.from_dict(request_body)
+
+    except KeyError as e:
         response = {
             "details": "Invalid data"
         }
-        return response, 400
+        abort(make_response(response, 400))
 
-   
-    try:
-         description = request_body["description"]
-    except:
-        response = {
-            "details": "Invalid data"
-        }
-        return response, 400
-
-
-    try:
-        completed_at = request_body["completed_at"]
-    except:
-        completed_at = None
-
-
-    new_task = Task(title=title, description=description, completed_at=completed_at)
     db.session.add(new_task)
     db.session.commit()
 
-    response = {
-        "task": {
-            "id": new_task.id,
-            "title": new_task.title,
-            "description": new_task.description,
-            "is_complete": new_task.completed_at != None
-        }
-    }
-    return response, 201
+    return new_task.to_dict(), 201
+
+   
+    # try:
+    #      description = request_body["description"]
+    # except:
+    #     response = {
+    #         "details": "Invalid data"
+    #     }
+    #     return response, 400
+
+
+    # try:
+    #     completed_at = request_body["completed_at"]
+    # except:
+    #     completed_at = None
+
+
+    # new_task = Task(title=title, description=description, completed_at=completed_at)
+
+
+    
 
 @bp.get("")
 def get_all_task():
@@ -63,8 +61,6 @@ def get_all_task():
 
     query = query.order_by(Task.id)
     task = db.session.scalars(query)
-    # We could also write the line above as:
-    # books = db.session.execute(query).scalars()
 
     tasks_response = []
     for task in task:

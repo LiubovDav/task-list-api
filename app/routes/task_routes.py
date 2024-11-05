@@ -2,9 +2,9 @@ from flask import Blueprint, request, Response, make_response, abort
 from app.models.task import Task
 from ..db import db
 
-task_bp = Blueprint("task_bp", __name__, url_prefix="/tasks" )
+bp = Blueprint("task_bp", __name__, url_prefix="/tasks" )
 
-@task_bp.post("")
+@bp.post("")
 def create_task():
     request_body = request.get_json()
     try:
@@ -45,7 +45,7 @@ def create_task():
     }
     return response, 201
 
-@task_bp.get("")
+@bp.get("")
 def get_all_task():
     query = db.select(Task)
 
@@ -78,18 +78,11 @@ def get_all_task():
         )
     return tasks_response
 
-@task_bp.get("/<task_id>")
+@bp.get("/<task_id>")
 def get_one_task(task_id):
     task = validate_task(task_id)
 
-    return {
-        "task": {
-            "id": task.id,
-            "title": task.title,
-            "description": task.description,
-            "is_complete": task.completed_at != None
-        }
-    }
+    return task.to_dict()
 
 def validate_task(task_id):
     try:
@@ -108,7 +101,7 @@ def validate_task(task_id):
 
     return task
 
-@task_bp.put("/<task_id>")
+@bp.put("/<task_id>")
 def update_task(task_id):
     task = validate_task(task_id)
     request_body = request.get_json()
@@ -128,7 +121,7 @@ def update_task(task_id):
 
     return response, 200
 
-@task_bp.delete("/<task_id>")
+@bp.delete("/<task_id>")
 def delete_task(task_id):
     task = validate_task(task_id)
     db.session.delete(task)

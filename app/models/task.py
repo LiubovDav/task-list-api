@@ -9,14 +9,16 @@ class Task(db.Model):
     description: Mapped[str]
     completed_at: Mapped[Optional[str]]
 
-def to_dict(self):
-    return dict(
-        id=self.id,
-        title=self.title,
-        description=self.description,
-        completed_at=self.completed_at
-    )
-   
+    def to_dict(self):
+        return dict(
+            task=dict(
+                id=self.id,
+                title=self.title,
+                description=self.description,
+                is_complete=self.completed_at!=None
+                )
+        )
+
 
    
    

@@ -3,7 +3,7 @@ from app.models.task import Task
 from ..db import db
 from datetime import datetime
 
-bp = Blueprint("task_bp", __name__, url_prefix="/tasks" )
+bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks" )
 
 @bp.post("")
 def create_task():
@@ -22,27 +22,6 @@ def create_task():
     db.session.commit()
 
     return new_task.to_dict(), 201
-
-   
-    # try:
-    #      description = request_body["description"]
-    # except:
-    #     response = {
-    #         "details": "Invalid data"
-    #     }
-    #     return response, 400
-
-
-    # try:
-    #     completed_at = request_body["completed_at"]
-    # except:
-    #     completed_at = None
-
-
-    # new_task = Task(title=title, description=description, completed_at=completed_at)
-
-
-    
 
 @bp.get("")
 def get_all_task():
@@ -68,10 +47,10 @@ def get_all_task():
             query = query.order_by(Task.title.desc())
 
     query = query.order_by(Task.id)
-    task = db.session.scalars(query)
+    tasks = db.session.scalars(query)
 
     tasks_response = []
-    for task in task:
+    for task in tasks:
         tasks_response.append(
             {
                 "id": task.id,

@@ -2,6 +2,10 @@ from flask import Blueprint, request, Response, make_response, abort
 from app.models.task import Task
 from ..db import db
 from datetime import datetime
+from slack_sdk.errors import SlackApiError
+from slack_sdk import WebClient
+import os
+
 
 bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks" )
 
@@ -106,6 +110,25 @@ def update_task(task_id):
 
 @bp.patch("/<task_id>/mark_complete")
 def mark_complete(task_id):
+
+    # ID of the channel you want to send the message to
+    channel_id = "api-test-channel"
+    client = WebClient(token=os.environ.get('SLACK_WEB_CLIENT_TOKEN'))
+
+    try:
+        # Call the chat.postMessage method using the WebClient
+        result = client.chat_postMessage(
+            channel=channel_id, 
+            text="Hello world"
+        )
+        # logger.info(result)
+        print(result)
+
+    except SlackApiError as e:
+        # logger.error(f"Error posting message: {e}")
+        print(f"Error posting message: {e}")
+
+
     task = validate_task(task_id)
 
     if task.completed_at == None:

@@ -83,8 +83,12 @@ def update_goal(goal_id):
     
     db.session.commit()
 
-    response = {}
-    response.append(goal.to_dict())
+    response = {
+    "goal": {
+        "id": goal.id,
+        "title": goal.title
+        }   
+    }
 
     return response, 200
 

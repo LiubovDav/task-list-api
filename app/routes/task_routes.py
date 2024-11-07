@@ -110,8 +110,9 @@ def update_task(task_id):
 
 @bp.patch("/<task_id>/mark_complete")
 def mark_complete(task_id):
+    task = validate_task(task_id)
 
-    # ID of the channel you want to send the message to
+    # TODO move to a function
     channel_id = "api-test-channel"
     client = WebClient(token=os.environ.get('SLACK_WEB_CLIENT_TOKEN'))
 
@@ -119,7 +120,7 @@ def mark_complete(task_id):
         # Call the chat.postMessage method using the WebClient
         result = client.chat_postMessage(
             channel=channel_id, 
-            text="Hello world"
+            text=f"Someone just completed the task \"{task.title}\""
         )
         # logger.info(result)
         print(result)
@@ -128,8 +129,6 @@ def mark_complete(task_id):
         # logger.error(f"Error posting message: {e}")
         print(f"Error posting message: {e}")
 
-
-    task = validate_task(task_id)
 
     if task.completed_at == None:
         task.completed_at = datetime.utcnow()

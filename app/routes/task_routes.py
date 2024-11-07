@@ -71,22 +71,6 @@ def get_one_task(task_id):
 
     return task.to_dict()
 
-def validate_task(task_id):
-    try:
-        task_id = int(task_id)
-    except:
-        response = {"details": "Invalid data"}
-
-        abort(make_response(response , 400))
-
-    query = db.select(Task).where(Task.id == task_id)
-    task = db.session.scalar(query)
-    
-    if not task:
-        response = {"message": f"task {task_id} not found"}
-        abort(make_response(response, 404))
-
-    return task
 
 @bp.put("/<task_id>")
 def update_task(task_id):
@@ -179,6 +163,23 @@ def delete_task(task_id):
     }
 
     return response, 200
+
+def validate_task(task_id):
+    try:
+        task_id = int(task_id)
+    except:
+        response = {"details": "Invalid data"}
+
+        abort(make_response(response , 400))
+
+    query = db.select(Task).where(Task.id == task_id)
+    task = db.session.scalar(query)
+    
+    if not task:
+        response = {"message": f"task {task_id} not found"}
+        abort(make_response(response, 404))
+
+    return task
 
 
 

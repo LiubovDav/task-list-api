@@ -57,22 +57,6 @@ def get_one_goal(goal_id):
 
     return goal.to_dict()
 
-def validate_goal(goal_id):
-    try:
-        goal_id = int(goal_id)
-    except:
-        response = {"details": "Invalid data"}
-
-        abort(make_response(response , 400))
-
-    query = db.select(Goal).where(Goal.id == goal_id)
-    goal = db.session.scalar(query)
-    
-    if not goal:
-        response = {"message": f"task {goal_id} not found"}
-        abort(make_response(response, 404))
-
-    return goal
 
 @bp.put("/<goal_id>")
 def update_goal(goal_id):
@@ -104,4 +88,20 @@ def delete_goal(goal_id):
 
     return response, 200
 
+def validate_goal(goal_id):
+    try:
+        goal_id = int(goal_id)
+    except:
+        response = {"details": "Invalid data"}
+
+        abort(make_response(response , 400))
+
+    query = db.select(Goal).where(Goal.id == goal_id)
+    goal = db.session.scalar(query)
+    
+    if not goal:
+        response = {"message": f"task {goal_id} not found"}
+        abort(make_response(response, 404))
+
+    return goal
 

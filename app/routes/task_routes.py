@@ -96,22 +96,24 @@ def update_task(task_id):
 def mark_complete(task_id):
     task = validate_task(task_id)
 
-    # # TODO move to a function
-    # channel_id = "api-test-channel"
-    # client = WebClient(token=os.environ.get('SLACK_WEB_CLIENT_TOKEN'))
 
-    # try:
-    #     # Call the chat.postMessage method using the WebClient
-    #     result = client.chat_postMessage(
-    #         channel=channel_id, 
-    #         text=f"Someone just completed the task \"{task.title}\""
-    #     )
-    #     # logger.info(result)
-    #     print(result)
+    if os.environ.get('SEND_SLACK_NOTIFICATIONS') == "True":
+        # TODO move to a function
+        channel_id = "api-test-channel"
+        client = WebClient(token=os.environ.get('SLACK_WEB_CLIENT_TOKEN'))
 
-    # except SlackApiError as e:
-    #     # logger.error(f"Error posting message: {e}")
-    #     print(f"Error posting message: {e}")
+        try:
+            # Call the chat.postMessage method using the WebClient
+            result = client.chat_postMessage(
+                channel=channel_id, 
+                text=f"Someone just completed the task \"{task.title}\""
+            )
+            # logger.info(result)
+            print(result)
+
+        except SlackApiError as e:
+            # logger.error(f"Error posting message: {e}")
+            print(f"Error posting message: {e}")
 
 
     if task.completed_at == None:

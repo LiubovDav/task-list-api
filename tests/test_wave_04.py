@@ -4,13 +4,14 @@ import os
 # There are no tests for wave 4.
 
 def test_massage_in_slack_on_completed_task(client, completed_task):
-# Act
-    response = client.patch("/tasks/1/mark_complete")
+    os.environ["SEND_SLACK_NOTIFICATIONS"] = "True"
+    
+    # Act
+    response = client.patch(f"/tasks/1/mark_complete")
     response_body = response.get_json()
 
     # Assert
     assert response.status_code == 200
-    assert "task" in response_body
     assert response_body["task"]["is_complete"] == True
     assert response_body == {
         "task": {
@@ -22,14 +23,7 @@ def test_massage_in_slack_on_completed_task(client, completed_task):
     }
     assert Task.query.get(1).completed_at
 
-def test_mark_complete_sends_slack_notification(client, completed_task):
-    os.environ["SEND_SLACK_NOTIFICATIONS"] = "True"
-    
+    # TODO somehow check that the message was posted in Slack channel.
+    # I haven't found Slack API method for that
 
-    # Act
-    response = client.patch(f"/tasks/1/mark_complete")
-    response_body = response.get_json()
-
-    # Assert
-    assert response.status_code == 200
-    assert response_body["task"]["is_complete"] == True
+    os.environ["SEND_SLACK_NOTIFICATIONS"] = "False"

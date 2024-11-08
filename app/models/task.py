@@ -10,7 +10,7 @@ class Task(db.Model):
     description: Mapped[str]
     completed_at: Mapped[Optional[str]]
     goal_id: Mapped[Optional[int]] = mapped_column(ForeignKey("goal.id"))
-    goal: Mapped[Optional["Goal"]] = relationship(back_populates="task")
+    goal: Mapped[Optional["Goal"]] = relationship(back_populates="tasks")
 
 
     # from model to JSON

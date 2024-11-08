@@ -1,6 +1,8 @@
 from flask import Blueprint, request, Response, make_response, abort
 from app.models.goal import Goal
 from ..db import db
+from ..models.task import Task
+from ..routes.task_routes import validate_task
 
 bp = Blueprint("goals_bp", __name__, url_prefix="/goals" )
 
@@ -23,7 +25,7 @@ def create_goal():
     return new_goal.to_dict(), 201
 
 @bp.get("")
-def get_all_goal():
+def get_all_goals():
     query = db.select(Goal)
 
     title_param = request.args.get("title")
@@ -104,4 +106,24 @@ def validate_goal(goal_id):
         abort(make_response(response, 404))
 
     return goal
+
+@bp.post("/<goal_id>/tasks")
+def assign_tasks_to_goal(goal_id):
+    goal = validate_goal(goal_id)
+    
+    request_body = request.get_json()
+    task_ids = request_body["task_ids"]
+
+    for task_id in task_ids:
+        task = validate_task(task_id)
+        task.goal_id = goal_id
+        db.session.add(task)
+        db.session.commit()
+
+    response = {
+        "id": int(goal_id),
+        "task_ids": task_ids
+    }
+
+    return response, 200
 

@@ -28,7 +28,7 @@ def create_task():
     return new_task.to_dict(), 201
 
 @bp.get("")
-def get_all_task():
+def get_all_tasks():
     query = db.select(Task)
 
     title_param = request.args.get("title")
@@ -95,7 +95,6 @@ def update_task(task_id):
 @bp.patch("/<task_id>/mark_complete")
 def mark_complete(task_id):
     task = validate_task(task_id)
-
 
     if os.environ.get('SEND_SLACK_NOTIFICATIONS') == "True":
         # TODO move to a function

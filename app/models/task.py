@@ -20,7 +20,8 @@ class Task(db.Model):
                 id=self.id,
                 title=self.title,
                 description=self.description,
-                is_complete=self.completed_at!=None
+                is_complete=self.completed_at!=None,
+                goal_id=self.goal_id
                 )
         )
     

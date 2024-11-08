@@ -127,3 +127,29 @@ def assign_tasks_to_goal(goal_id):
 
     return response, 200
 
+# @bp.get("/<goal_id>/tasks")
+# def get_goal_with_assigned_tasks(goal_id):
+#     goal = validate_goal(goal_id)
+
+#     tasks_param = request.args.get("tasks_id")
+#     if task_param:
+#         query = db.select(Goal).order_by(Task.id)
+
+#     goals = db.session.scalars(query)
+
+#     goals_response = []
+#     for goal in goals:
+#         goals_response.append(
+#             response_body == {
+#                 "id": 1,
+#                 "title": "Build a habit of going outside daily",
+#                 "tasks": [{
+#                     "id": task.id,
+#                     "title": task.title,
+#                     "description": task.description,
+#                     "is_complete": task.completed_at != None
+#                 }]
+#             }
+#         )
+
+#     return goals_response

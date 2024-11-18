@@ -2,9 +2,10 @@ from flask import Blueprint, request, Response, make_response, abort
 from app.models.task import Task
 from ..db import db
 from datetime import datetime
-from slack_sdk.errors import SlackApiError
-from slack_sdk import WebClient
+# from slack_sdk.errors import SlackApiError
+# from slack_sdk import WebClient
 import os
+import requests
 
 
 bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks" )
@@ -92,27 +93,64 @@ def update_task(task_id):
 
     return response, 200
 
+# @bp.patch("/<task_id>/mark_complete")
+# def mark_complete(task_id):
+#     task = validate_task(task_id)
+
+#     if os.environ.get('SEND_SLACK_NOTIFICATIONS') == "True":
+#         # TODO move to a function
+#         channel_id = "api-test-channel"
+#         client = WebClient(token=os.environ.get('SLACK_WEB_CLIENT_TOKEN'))
+
+#         try:
+#             # Call the chat.postMessage method using the WebClient
+#             result = client.chat_postMessage(
+#                 channel=channel_id, 
+#                 text=f"Someone just completed the task \"{task.title}\""
+#             )
+#             # logger.info(result)
+#             print(result)
+
+#         except SlackApiError as e:
+#             # logger.error(f"Error posting message: {e}")
+#             print(f"Error posting message: {e}")
+
+
+#     if task.completed_at == None:
+#         task.completed_at = datetime.utcnow()
+#         db.session.commit()
+#     else:
+#         pass
+
+#     response = {
+#         "task": {
+#             "id": task.id,
+#             "title": task.title,
+#             "description": task.description,
+#             "is_complete": task.completed_at != None
+#         }
+#     }
+
+#     return response, 200
+
 @bp.patch("/<task_id>/mark_complete")
 def mark_complete(task_id):
     task = validate_task(task_id)
 
     if os.environ.get('SEND_SLACK_NOTIFICATIONS') == "True":
-        # TODO move to a function
-        channel_id = "api-test-channel"
-        client = WebClient(token=os.environ.get('SLACK_WEB_CLIENT_TOKEN'))
 
-        try:
-            # Call the chat.postMessage method using the WebClient
-            result = client.chat_postMessage(
-                channel=channel_id, 
-                text=f"Someone just completed the task \"{task.title}\""
-            )
-            # logger.info(result)
-            print(result)
+        url = 'https://slack.com/api/im.open'
+        # headers = {'content-type': 'x-www-form-urlencoded'}
+        data = [
+            ('token', os.environ.get('SLACK_WEB_CLIENT_TOKEN')),
+            ('channel', "api-test-channel"),
+            # ('include_locale', 'true'),
+            # ('return_im', 'true'),
+            ('text', f"Someone just completed the task \"{task.title}\"")
+        ]
 
-        except SlackApiError as e:
-            # logger.error(f"Error posting message: {e}")
-            print(f"Error posting message: {e}")
+        r = requests.post(url, data, **headers)
+        print(r.text)
 
 
     if task.completed_at == None:
@@ -131,6 +169,7 @@ def mark_complete(task_id):
     }
 
     return response, 200
+
 
 @bp.patch("/<task_id>/mark_incomplete")
 def mark_incomplete(task_id):

@@ -2,9 +2,9 @@ from flask import Blueprint, request, Response, make_response, abort
 from app.models.task import Task
 from ..db import db
 from datetime import datetime
-from slack_sdk.errors import SlackApiError
-from slack_sdk import WebClient
 import os
+import requests
+from os import environ
 
 
 bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks" )
@@ -96,30 +96,11 @@ def update_task(task_id):
 def mark_complete(task_id):
     task = validate_task(task_id)
 
+    task.completed_at = datetime.utcnow()
+    db.session.commit()
+
     if os.environ.get('SEND_SLACK_NOTIFICATIONS') == "True":
-        # TODO move to a function
-        channel_id = "api-test-channel"
-        client = WebClient(token=os.environ.get('SLACK_WEB_CLIENT_TOKEN'))
-
-        try:
-            # Call the chat.postMessage method using the WebClient
-            result = client.chat_postMessage(
-                channel=channel_id, 
-                text=f"Someone just completed the task \"{task.title}\""
-            )
-            # logger.info(result)
-            print(result)
-
-        except SlackApiError as e:
-            # logger.error(f"Error posting message: {e}")
-            print(f"Error posting message: {e}")
-
-
-    if task.completed_at == None:
-        task.completed_at = datetime.utcnow()
-        db.session.commit()
-    else:
-        pass
+        send_slack_notification(task.title)
 
     response = {
         "task": {
@@ -131,6 +112,22 @@ def mark_complete(task_id):
     }
 
     return response, 200
+
+def send_slack_notification(task_title):
+    request_data = {
+        "channel": "#api-test-channel",
+        "username": "LD bot",
+        "text": f"Someone just completed the task \"{task_title}\""
+    }
+
+    response = requests.post(
+        url="https://slack.com/api/chat.postMessage",
+        json=request_data,
+        headers={"Authorization": f"Bearer {environ.get('SLACK_WEB_CLIENT_TOKEN')}"},
+        timeout=5
+    )
+    response.raise_for_status()
+    return response.json().get("ok", False)
 
 @bp.patch("/<task_id>/mark_incomplete")
 def mark_incomplete(task_id):
@@ -181,9 +178,3 @@ def validate_task(task_id):
         abort(make_response(response, 404))
 
     return task
-
-
-
-
-
-

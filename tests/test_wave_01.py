@@ -46,8 +46,7 @@ def test_get_task(client, one_task):
             "id": 1,
             "title": "Go on my daily walk 🏞",
             "description": "Notice something new every day",
-            "is_complete": False,
-            "goal_id": None
+            "is_complete": False
         }
     }
 
@@ -88,8 +87,7 @@ def test_create_task(client):
             "id": 1,
             "title": "A Brand New Task",
             "description": "Test Description",
-            "is_complete": False,
-            "goal_id": None
+            "is_complete": False
         }
     }
     new_task = Task.query.get(1)

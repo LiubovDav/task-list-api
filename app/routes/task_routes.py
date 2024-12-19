@@ -25,7 +25,7 @@ def create_task():
     db.session.add(new_task)
     db.session.commit()
 
-    return new_task.to_dict(), 201
+    return {"task": new_task.to_dict()}, 201
 
 @bp.get("")
 def get_all_tasks():
@@ -52,24 +52,15 @@ def get_all_tasks():
 
     query = query.order_by(Task.id)
     tasks = db.session.scalars(query)
-
-    tasks_response = []
-    for task in tasks:
-        tasks_response.append(
-            {
-                "id": task.id,
-                "title": task.title,
-                "description": task.description,
-                "is_complete": task.completed_at != None
-            }
-        )
-    return tasks_response
+    
+    response = [task.to_dict() for task in tasks]
+    return response, 200
 
 @bp.get("/<task_id>")
 def get_one_task(task_id):
     task = validate_task(task_id)
 
-    return task.to_dict()
+    return {"task": task.to_dict()}
 
 
 @bp.put("/<task_id>")
@@ -82,12 +73,7 @@ def update_task(task_id):
     db.session.commit()
 
     response = {
-        "task": {
-            "id": task.id,
-            "title": task.title,
-            "description": task.description,
-            "is_complete": task.completed_at != None
-        }
+        "task": task.to_dict()
     }
 
     return response, 200
@@ -103,12 +89,7 @@ def mark_complete(task_id):
         send_slack_notification(task.title)
 
     response = {
-        "task": {
-            "id": task.id,
-            "title": task.title,
-            "description": task.description,
-            "is_complete": task.completed_at != None
-        }
+        "task": task.to_dict()
     }
 
     return response, 200
@@ -140,12 +121,7 @@ def mark_incomplete(task_id):
         pass
 
     response = {
-        "task": {
-            "id": task.id,
-            "title": task.title,
-            "description": task.description,
-            "is_complete": task.completed_at != None
-        }
+        "task": task.to_dict()
     }
 
     return response, 200

@@ -15,15 +15,21 @@ class Task(db.Model):
 
     # from model to JSON
     def to_dict(self):
-        return dict(
-            task=dict(
-                id=self.id,
-                title=self.title,
-                description=self.description,
-                is_complete=self.completed_at!=None,
-                goal_id=self.goal_id
-                )
-        )
+        if self.goal_id is None:
+            return dict(
+                    id=self.id,
+                    title=self.title,
+                    description=self.description,
+                    is_complete=self.completed_at!=None
+                    )
+        else:
+            return dict(
+                    id=self.id,
+                    title=self.title,
+                    description=self.description,
+                    is_complete=self.completed_at!=None,
+                    goal_id=self.goal_id
+                    )
     
     # from JSON to model
     @classmethod

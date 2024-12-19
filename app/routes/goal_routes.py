@@ -118,7 +118,8 @@ def assign_tasks_to_goal(goal_id):
         task = validate_task(task_id)
         task.goal_id = goal_id
         db.session.add(task)
-        db.session.commit()
+
+    db.session.commit()
 
     response = {
         "id": int(goal_id),
@@ -140,16 +141,6 @@ def get_goal_with_assigned_tasks(goal_id):
     response["title"] = goal.title
     response["tasks"] = []
 
-    for task in tasks:
-
-        task_dict = dict(
-                id=task.id,
-                title=task.title,
-                description=task.description,
-                is_complete=task.completed_at!=None,
-                goal_id=task.goal_id
-                )
-
-        response["tasks"].append(task_dict)
+    response["tasks"] = [task.to_dict() for task in tasks]
 
     return response, 200

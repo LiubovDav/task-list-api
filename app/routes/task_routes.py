@@ -17,6 +17,7 @@ def create_task():
         new_task = Task.from_dict(request_body)
 
     except KeyError as e:
+        print(e)
         response = {
             "details": "Invalid data"
         }

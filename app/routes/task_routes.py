@@ -151,7 +151,7 @@ def validate_task(task_id):
     task = db.session.scalar(query)
     
     if not task:
-        response = {"message": f"task {task_id} not found"}
+        response = {"message": f"Task {task_id} not found"}
         abort(make_response(response, 404))
 
     return task

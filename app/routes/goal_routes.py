@@ -102,7 +102,7 @@ def validate_goal(goal_id):
     goal = db.session.scalar(query)
     
     if not goal:
-        response = {"message": f"task {goal_id} not found"}
+        response = {"message": f"Goal {goal_id} not found"}
         abort(make_response(response, 404))
 
     return goal

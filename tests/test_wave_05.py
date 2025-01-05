@@ -57,7 +57,7 @@ def test_get_goal_not_found(client):
     # Assert
     # ---- Complete Test ----
     assert response.status_code == 404
-    assert response_body == {"message": "task 1 not found"}
+    assert response_body == {"message": "Goal 1 not found"}
     # assertion 2 goes here
     # ---- Complete Test ----
 
@@ -111,7 +111,7 @@ def test_update_goal_not_found(client):
 
     # Assert
     assert response.status_code == 404
-    assert response_body == {"message": f"task 1 not found"}
+    assert response_body == {"message": "Goal 1 not found"}
 
 
 # @pytest.mark.skip(reason="No way to test this feature yet")
@@ -130,7 +130,8 @@ def test_delete_goal(client, one_goal):
     # Check that the goal was deleted
     response = client.get("/goals/1")
     assert response.status_code == 404
-    assert response_body == {"details": 'Goal 1 "Build a habit of going outside daily" successfully deleted'}
+    response_body = response.get_json()
+    assert response_body == {"message": "Goal 1 not found"}
 
     # raise Exception("Complete test with assertion about response body")
     # *****************************************************************
@@ -149,7 +150,7 @@ def test_delete_goal_not_found(client):
 
     # Assert
     assert response.status_code == 404
-    assert response_body == {"message": "task 1 not found"}
+    assert response_body == {"message": "Goal 1 not found"}
    
 
 
